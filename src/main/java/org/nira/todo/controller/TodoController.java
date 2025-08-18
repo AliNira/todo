@@ -3,6 +3,7 @@ package org.nira.todo.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.nira.todo.dto.TodoRequestDto;
+import org.nira.todo.dto.TodoRequestUpdateDto;
 import org.nira.todo.dto.TodoResponseDto;
 import org.nira.todo.service.TodoService;
 import org.springframework.http.HttpStatus;
@@ -27,12 +28,38 @@ public class TodoController {
     @GetMapping("/{id}")
     public ResponseEntity<TodoResponseDto> getTodoById(@PathVariable("id") Long id) {
         TodoResponseDto foundTodo = todoService.getTodoById(id);
-        return new ResponseEntity<>(foundTodo, HttpStatus.OK);
+        return ResponseEntity.ok(foundTodo);
     }
 
     @GetMapping
-    public ResponseEntity<List<TodoResponseDto>> getTodos() {
-        List<TodoResponseDto> todos = todoService.getTodos();
-        return new ResponseEntity<>(todos, HttpStatus.OK);
+    public ResponseEntity<List<TodoResponseDto>> getAllTodos() {
+        List<TodoResponseDto> todos = todoService.getAllTodos();
+        return ResponseEntity.ok(todos);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<TodoResponseDto> updateTodo(@RequestBody @Valid TodoRequestUpdateDto todoRequestUpdateDto,
+                                                      @PathVariable("id") Long id){
+        TodoResponseDto todoResponseDto = todoService.updateTodo(todoRequestUpdateDto, id);
+        return new ResponseEntity<>(todoResponseDto, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteTodo(@PathVariable("id") Long id){
+        todoService.deleteTodoById(id);
+    }
+    
+    @PatchMapping("/{id}/complete")
+    public ResponseEntity<TodoResponseDto> completeTodo(@PathVariable("id") Long id){
+        TodoResponseDto todoResponseDto = todoService.completeTodo(id);
+        return new ResponseEntity<>(todoResponseDto, HttpStatus.OK);
+    }
+    
+    @PatchMapping("/{id}/in-complete")
+    public ResponseEntity<TodoResponseDto> incompleteTodo(@PathVariable("id") Long id){
+        TodoResponseDto todoResponseDto = todoService.completeTodo(id);
+        return new ResponseEntity<>(todoResponseDto, HttpStatus.OK);
+    }
+    
+
 }
