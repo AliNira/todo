@@ -21,4 +21,6 @@ public interface TodoService {
     TodoResponseDto completeTodo(Long id);
 
     TodoResponseDto inCompleteTodo(Long id);
+
+    TodoResponseDto attachImageToTodo(Long id, String fileName);
 }

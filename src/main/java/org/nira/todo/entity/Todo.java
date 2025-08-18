@@ -22,5 +22,7 @@ public class Todo {
     @Column(nullable = false)
     private String description;
     private Boolean done;
+    @Column(name = "image_url")
+    private String imageUrl;
 
 }
