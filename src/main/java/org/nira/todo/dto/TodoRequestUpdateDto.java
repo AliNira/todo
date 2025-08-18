@@ -10,11 +10,8 @@ import lombok.Setter;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class TodoRequestDto {
-    @NotEmpty(message = "Todo title can't be null or empty")
+public class TodoRequestUpdateDto {
     private String title;
-    @NotEmpty(message = "Todo description can't be null or empty")
     private String description;
     private Boolean done;
-
 }

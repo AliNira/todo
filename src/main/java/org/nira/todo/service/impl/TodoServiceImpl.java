@@ -2,11 +2,14 @@ package org.nira.todo.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.nira.todo.dto.TodoRequestDto;
+import org.nira.todo.dto.TodoRequestUpdateDto;
 import org.nira.todo.dto.TodoResponseDto;
 import org.nira.todo.entity.Todo;
+import org.nira.todo.exception.ResourceNotFoundException;
 import org.nira.todo.repository.TodoRepo;
 import org.nira.todo.service.TodoService;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -27,14 +30,51 @@ public class TodoServiceImpl implements TodoService {
 
     @Override
     public TodoResponseDto getTodoById(Long id) {
-        Todo todo = todoRepo.findById(id).get();
+        Todo todo = todoRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Todo Not Found with id: " + id));
         return MAPPER.mapToTodoResponseDto(todo);
     }
 
     @Override
-    public List<TodoResponseDto> getTodos() {
+    public List<TodoResponseDto> getAllTodos() {
         List<Todo> todos = todoRepo.findAll();
         return todos.stream().map(MAPPER::mapToTodoResponseDto).toList();
+    }
+
+    @Override
+    public TodoResponseDto updateTodo(TodoRequestUpdateDto todoRequestUpdateDto, Long id) {
+        Todo todo = todoRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Todo Not Found with id: " + id));
+        todo.setTitle(todoRequestUpdateDto.getTitle());
+        todo.setDescription(todoRequestUpdateDto.getDescription());
+        todo.setDone(todoRequestUpdateDto.getDone());
+        Todo savedTodo = todoRepo.save(todo);
+        return MAPPER.mapToTodoResponseDto(savedTodo);
+    }
+
+    @Override
+    public void deleteTodoById(Long id) {
+        Todo todo = todoRepo.findById(id).
+                orElseThrow(() -> new ResourceNotFoundException("Todo Not Found with id: " + id));
+        todoRepo.deleteById(id);
+    }
+
+    @Override
+    public TodoResponseDto completeTodo(Long id) {
+        Todo todo = todoRepo.findById(id).
+                orElseThrow(() -> new ResourceNotFoundException("Todo Not Found with id: " + id));
+        todo.setDone(Boolean.TRUE);
+        Todo completeTodo = todoRepo.save(todo);
+        return MAPPER.mapToTodoResponseDto(completeTodo);
+    }
+
+    @Override
+    public TodoResponseDto inCompleteTodo(Long id) {
+        Todo todo = todoRepo.findById(id).
+                orElseThrow(() -> new ResourceNotFoundException("Todo Not Found with id: " + id));
+        todo.setDone(Boolean.FALSE);
+        Todo completeTodo = todoRepo.save(todo);
+        return MAPPER.mapToTodoResponseDto(completeTodo);
     }
 
 
