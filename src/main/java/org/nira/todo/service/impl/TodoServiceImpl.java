@@ -77,5 +77,12 @@ public class TodoServiceImpl implements TodoService {
         return MAPPER.mapToTodoResponseDto(completeTodo);
     }
 
+    public TodoResponseDto attachImageToTodo(Long id, String fileName) {
+        Todo todo = todoRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Todo not found"));
+        todo.setImageUrl(fileName);
+        todoRepo.save(todo);
+        return MAPPER.mapToTodoResponseDto(todo);
+    }
 
 }

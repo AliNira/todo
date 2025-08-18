@@ -5,10 +5,12 @@ import lombok.RequiredArgsConstructor;
 import org.nira.todo.dto.TodoRequestDto;
 import org.nira.todo.dto.TodoRequestUpdateDto;
 import org.nira.todo.dto.TodoResponseDto;
+import org.nira.todo.service.FileStorageService;
 import org.nira.todo.service.TodoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -18,6 +20,7 @@ import java.util.List;
 public class TodoController {
 
     private final TodoService todoService;
+    private final FileStorageService fileStorageService;
 
     @PostMapping
     public ResponseEntity<TodoResponseDto> addTodo(@RequestBody @Valid TodoRequestDto todoRequestDto) {
@@ -57,9 +60,18 @@ public class TodoController {
     
     @PatchMapping("/{id}/in-complete")
     public ResponseEntity<TodoResponseDto> incompleteTodo(@PathVariable("id") Long id){
-        TodoResponseDto todoResponseDto = todoService.completeTodo(id);
+        TodoResponseDto todoResponseDto = todoService.inCompleteTodo(id);
         return new ResponseEntity<>(todoResponseDto, HttpStatus.OK);
     }
-    
+
+    @PostMapping("/{id}/upload-image")
+    public ResponseEntity<TodoResponseDto> uploadImage(@PathVariable Long id,
+                                                       @RequestParam("file") MultipartFile file) throws Exception {
+        String fileName = fileStorageService.uploadFile(file);
+        TodoResponseDto updated = todoService.attachImageToTodo(id, fileName);
+        return ResponseEntity.ok(updated);
+    }
+
+
 
 }
