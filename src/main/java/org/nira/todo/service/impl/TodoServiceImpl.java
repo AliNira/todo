@@ -8,6 +8,8 @@ import org.nira.todo.repository.TodoRepo;
 import org.nira.todo.service.TodoService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 import static org.nira.todo.mapper.TodoMapper.MAPPER;
 
 @Service
@@ -20,7 +22,20 @@ public class TodoServiceImpl implements TodoService {
     public TodoResponseDto addTodo(TodoRequestDto todoRequestDto) {
         Todo todo = MAPPER.mapToTodo(todoRequestDto);
         Todo savedTodo = todoRepo.save(todo);
-        TodoResponseDto todoResponseDto = MAPPER.mapToTodoResponseDto(savedTodo);
-        return todoResponseDto;
+        return MAPPER.mapToTodoResponseDto(savedTodo);
     }
+
+    @Override
+    public TodoResponseDto getTodoById(Long id) {
+        Todo todo = todoRepo.findById(id).get();
+        return MAPPER.mapToTodoResponseDto(todo);
+    }
+
+    @Override
+    public List<TodoResponseDto> getTodos() {
+        List<Todo> todos = todoRepo.findAll();
+        return todos.stream().map(MAPPER::mapToTodoResponseDto).toList();
+    }
+
+
 }
