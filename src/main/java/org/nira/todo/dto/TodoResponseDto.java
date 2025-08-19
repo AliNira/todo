@@ -14,4 +14,5 @@ public class TodoResponseDto {
     private String title;
     private String description;
     private Boolean done;
+    private String imageUrl;
 }

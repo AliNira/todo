@@ -1,0 +1,33 @@
+version: "3.9"
+
+services:
+  minio:
+    image: quay.io/minio/minio
+    container_name: todo-minio-storage
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: nira
+      MINIO_ROOT_PASSWORD: nira12345
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:17
+    container_name: todo-container
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: todo_db
+      POSTGRES_USER: nira
+      POSTGRES_PASSWORD: nira0211
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  minio_data:
+  postgres_data:
