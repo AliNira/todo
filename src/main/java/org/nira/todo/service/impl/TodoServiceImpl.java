@@ -45,9 +45,7 @@ public class TodoServiceImpl implements TodoService {
     public TodoResponseDto updateTodo(TodoRequestUpdateDto todoRequestUpdateDto, Long id) {
         Todo todo = todoRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Todo Not Found with id: " + id));
-        todo.setTitle(todoRequestUpdateDto.getTitle());
-        todo.setDescription(todoRequestUpdateDto.getDescription());
-        todo.setDone(todoRequestUpdateDto.getDone());
+        applyNonNullFields(todoRequestUpdateDto, todo);
         Todo savedTodo = todoRepo.save(todo);
         return MAPPER.mapToTodoResponseDto(savedTodo);
     }
@@ -83,6 +81,12 @@ public class TodoServiceImpl implements TodoService {
         todo.setImageUrl(fileName);
         todoRepo.save(todo);
         return MAPPER.mapToTodoResponseDto(todo);
+    }
+
+    private void applyNonNullFields(TodoRequestUpdateDto dto, Todo entity){
+        if(dto.getTitle() != null) entity.setTitle(dto.getTitle());
+        if(dto.getDescription() != null) entity.setDescription(dto.getDescription());
+        if(dto.getDone() != null) entity.setDone(dto.getDone());
     }
 
 }
