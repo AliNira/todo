@@ -15,23 +15,23 @@ import lombok.Setter;
 @NoArgsConstructor
 public class TodoResponseDto {
     @Schema(
-            description = "Todo ID"
+            description = "Todo id"
     )
     private Long id;
     @Schema(
-            description = "Todo Title"
+            description = "Todo title"
     )
     private String title;
     @Schema(
-            description = "Todo Description"
+            description = "Todo description"
     )
     private String description;
     @Schema(
-            description = "Todo Completion"
+            description = "Todo completion"
     )
     private Boolean done;
     @Schema(
-            description = "Todo Image URL"
+            description = "Todo image URL"
     )
     private String imageUrl;
 }
