@@ -2,8 +2,8 @@ package org.nira.todo.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
-import org.nira.todo.dto.TodoRequestDto;
-import org.nira.todo.dto.TodoResponseDto;
+import org.nira.todo.dto.todo.TodoRequestDto;
+import org.nira.todo.dto.todo.TodoResponseDto;
 import org.nira.todo.entity.Todo;
 
 @Mapper

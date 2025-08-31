@@ -17,11 +17,15 @@ public class Todo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(nullable = false)
     private String title;
+
     @Column(nullable = false)
     private String description;
+
     private Boolean done;
+
     @Column(name = "image_url")
     private String imageUrl;
 

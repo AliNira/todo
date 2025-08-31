@@ -1,4 +1,4 @@
-package org.nira.todo.service;
+package org.nira.todo.service.minio;
 
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;

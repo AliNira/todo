@@ -5,10 +5,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.nira.todo.dto.TodoRequestDto;
-import org.nira.todo.dto.TodoRequestUpdateDto;
-import org.nira.todo.dto.TodoResponseDto;
-import org.nira.todo.service.FileStorageService;
+import org.nira.todo.dto.todo.TodoRequestDto;
+import org.nira.todo.dto.todo.TodoRequestUpdateDto;
+import org.nira.todo.dto.todo.TodoResponseDto;
+import org.nira.todo.service.minio.FileStorageService;
 import org.nira.todo.service.TodoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -76,14 +76,14 @@ public class TodoController {
     )
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    public ResponseEntity<TodoResponseDto> updateTodo(@RequestBody @Valid TodoRequestUpdateDto todoRequestUpdateDto,
+    public ResponseEntity<TodoResponseDto> updateTodo(@RequestBody TodoRequestUpdateDto todoRequestUpdateDto,
                                                       @PathVariable("id") Long id){
         TodoResponseDto todoResponseDto = todoService.updateTodo(todoRequestUpdateDto, id);
         return new ResponseEntity<>(todoResponseDto, HttpStatus.OK);
     }
 
     @Operation(
-            summary = "Update Todo"
+            summary = "Delete Todo"
     )
     @ApiResponse(
             responseCode = "204"
@@ -96,7 +96,7 @@ public class TodoController {
     }
 
     @Operation(
-            summary = "Update Todo"
+            summary = "Complete Todo"
     )
     @ApiResponse(
             responseCode = "200"
@@ -109,7 +109,7 @@ public class TodoController {
     }
 
     @Operation(
-            summary = "Update Todo"
+            summary = "Incomplete Todo"
     )
     @ApiResponse(
             responseCode = "200"
