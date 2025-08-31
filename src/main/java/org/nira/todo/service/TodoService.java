@@ -1,8 +1,8 @@
 package org.nira.todo.service;
 
-import org.nira.todo.dto.TodoRequestDto;
-import org.nira.todo.dto.TodoRequestUpdateDto;
-import org.nira.todo.dto.TodoResponseDto;
+import org.nira.todo.dto.todo.TodoRequestDto;
+import org.nira.todo.dto.todo.TodoRequestUpdateDto;
+import org.nira.todo.dto.todo.TodoResponseDto;
 
 import java.util.List;
 

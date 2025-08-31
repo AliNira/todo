@@ -1,15 +1,14 @@
 package org.nira.todo.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.nira.todo.dto.TodoRequestDto;
-import org.nira.todo.dto.TodoRequestUpdateDto;
-import org.nira.todo.dto.TodoResponseDto;
+import org.nira.todo.dto.todo.TodoRequestDto;
+import org.nira.todo.dto.todo.TodoRequestUpdateDto;
+import org.nira.todo.dto.todo.TodoResponseDto;
 import org.nira.todo.entity.Todo;
 import org.nira.todo.exception.ResourceNotFoundException;
 import org.nira.todo.repository.TodoRepo;
 import org.nira.todo.service.TodoService;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
