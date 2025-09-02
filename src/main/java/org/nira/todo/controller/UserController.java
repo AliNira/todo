@@ -1,21 +1,20 @@
 package org.nira.todo.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.nira.todo.dto.user.UserRequestDto;
-import org.nira.todo.dto.user.UserRequestUpdateDto;
-import org.nira.todo.dto.user.UserRequestUpdateRoleDto;
-import org.nira.todo.dto.user.UserResponseDto;
+import org.nira.todo.dto.user.*;
+import org.nira.todo.entity.Role;
 import org.nira.todo.service.UserService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Tag(
         name = "User"
@@ -61,9 +60,40 @@ public class UserController {
     )
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
-    public ResponseEntity<List<UserResponseDto>> getAllUsers() {
-        List<UserResponseDto> users = userService.getAllUsers();
+    public ResponseEntity<Page<UserResponseDto>> getAllUsers(@RequestParam(defaultValue = "0") int page,
+                                                             @RequestParam(defaultValue = "10") int size) {
+        Page<UserResponseDto> users = userService.getAllUsers(page, size);
         return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
+    @Operation(
+            summary = "Search Users",
+            description = "Search users with flexible criteria including name, username, email, role, and global search"
+    )
+    @ApiResponse(responseCode = "200")
+    @Parameters({
+            @Parameter(name = "name", description = "Search by name (partial match)"),
+            @Parameter(name = "username", description = "Search by username (partial match)"),
+            @Parameter(name = "email", description = "Search by email (partial match)"),
+            @Parameter(name = "role", description = "Filter by user role (ADMIN, USER)"),
+            @Parameter(name = "search", description = "Global search across name, username, and email"),
+            @Parameter(name = "page", description = "Page number (0-based)"),
+            @Parameter(name = "size", description = "Page size")
+    })
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/search")
+    public ResponseEntity<Page<UserResponseDto>> searchUsers(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String username,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) Role role,
+            @RequestParam(required = false) String search,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        UserSearchCriteria criteria = new UserSearchCriteria(name, username, email, role, search);
+        Page<UserResponseDto> users = userService.searchUsers(criteria, page, size);
+        return ResponseEntity.ok(users);
     }
 
     @Operation(

@@ -3,8 +3,8 @@ package org.nira.todo.service;
 import org.nira.todo.dto.todo.TodoRequestDto;
 import org.nira.todo.dto.todo.TodoRequestUpdateDto;
 import org.nira.todo.dto.todo.TodoResponseDto;
-
-import java.util.List;
+import org.nira.todo.dto.todo.TodoSearchCriteria;
+import org.springframework.data.domain.Page;
 
 public interface TodoService {
 
@@ -12,7 +12,9 @@ public interface TodoService {
 
     TodoResponseDto getTodoById(Long id);
 
-    List<TodoResponseDto> getAllTodos();
+    Page<TodoResponseDto> getAllTodos(int page, int size);
+
+    Page<TodoResponseDto> searchTodos(TodoSearchCriteria criteria, int page, int size);
 
     TodoResponseDto updateTodo(TodoRequestUpdateDto todoRequestUpdateDto, Long id);
 
