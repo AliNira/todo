@@ -1,6 +1,8 @@
 package org.nira.todo.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -8,15 +10,15 @@ import lombok.RequiredArgsConstructor;
 import org.nira.todo.dto.todo.TodoRequestDto;
 import org.nira.todo.dto.todo.TodoRequestUpdateDto;
 import org.nira.todo.dto.todo.TodoResponseDto;
-import org.nira.todo.service.minio.FileStorageService;
+import org.nira.todo.dto.todo.TodoSearchCriteria;
 import org.nira.todo.service.TodoService;
+import org.nira.todo.service.minio.FileStorageService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @Tag(
         name = "Todo"
@@ -63,8 +65,39 @@ public class TodoController {
     )
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @GetMapping
-    public ResponseEntity<List<TodoResponseDto>> getAllTodos() {
-        List<TodoResponseDto> todos = todoService.getAllTodos();
+    public ResponseEntity<Page<TodoResponseDto>> getAllTodos(@RequestParam(defaultValue = "0") int page,
+                                                             @RequestParam(defaultValue = "10") int size) {
+        Page<TodoResponseDto> todos = todoService.getAllTodos(page, size);
+        return ResponseEntity.ok(todos);
+    }
+
+    @Operation(
+            summary = "Search Todos",
+            description = "Search todos with flexible criteria including title, description, completion status, and image presence"
+    )
+    @ApiResponse(responseCode = "200")
+    @Parameters({
+            @Parameter(name = "title", description = "Search by title (partial match)"),
+            @Parameter(name = "description", description = "Search by description (partial match)"),
+            @Parameter(name = "done", description = "Filter by completion status"),
+            @Parameter(name = "hasImage", description = "Filter by image presence"),
+            @Parameter(name = "search", description = "Global search across title and description"),
+            @Parameter(name = "page", description = "Page number (0-based)"),
+            @Parameter(name = "size", description = "Page size")
+    })
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @GetMapping("/search")
+    public ResponseEntity<Page<TodoResponseDto>> searchTodos(
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String description,
+            @RequestParam(required = false) Boolean done,
+            @RequestParam(required = false) Boolean hasImage,
+            @RequestParam(required = false) String search,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        TodoSearchCriteria criteria = new TodoSearchCriteria(title, description, done, hasImage, search);
+        Page<TodoResponseDto> todos = todoService.searchTodos(criteria, page, size);
         return ResponseEntity.ok(todos);
     }
 
@@ -135,6 +168,8 @@ public class TodoController {
         TodoResponseDto updated = todoService.attachImageToTodo(id, fileName);
         return ResponseEntity.ok(updated);
     }
+
+
 
 
 

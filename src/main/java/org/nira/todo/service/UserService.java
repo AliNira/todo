@@ -1,11 +1,7 @@
 package org.nira.todo.service;
 
-import org.nira.todo.dto.user.UserRequestDto;
-import org.nira.todo.dto.user.UserRequestUpdateDto;
-import org.nira.todo.dto.user.UserRequestUpdateRoleDto;
-import org.nira.todo.dto.user.UserResponseDto;
-
-import java.util.List;
+import org.nira.todo.dto.user.*;
+import org.springframework.data.domain.Page;
 
 public interface UserService {
 
@@ -13,7 +9,9 @@ public interface UserService {
 
     UserResponseDto getUserById(Long userId);
 
-    List<UserResponseDto> getAllUsers();
+    Page<UserResponseDto> getAllUsers(int page, int size);
+
+    Page<UserResponseDto> searchUsers(UserSearchCriteria criteria, int page, int size);
 
     UserResponseDto updateUser(Long userId, UserRequestUpdateDto userRequestDto);
 

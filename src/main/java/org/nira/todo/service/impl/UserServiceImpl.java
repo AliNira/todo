@@ -1,18 +1,18 @@
 package org.nira.todo.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.nira.todo.dto.user.UserRequestDto;
-import org.nira.todo.dto.user.UserRequestUpdateDto;
-import org.nira.todo.dto.user.UserRequestUpdateRoleDto;
-import org.nira.todo.dto.user.UserResponseDto;
+import org.nira.todo.dto.user.*;
 import org.nira.todo.entity.User;
 import org.nira.todo.exception.EmailOrUsernameAlreadyExistException;
 import org.nira.todo.exception.ResourceNotFoundException;
 import org.nira.todo.repository.UserRepo;
+import org.nira.todo.repository.specification.UserSpecification;
 import org.nira.todo.service.UserService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 import static org.nira.todo.mapper.UserMapper.MAPPER;
 
@@ -38,9 +38,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserResponseDto> getAllUsers() {
-        List<User> users = userRepo.findAll();
-        return users.stream().map(MAPPER::mapToUserResponse).toList();
+    public Page<UserResponseDto> getAllUsers(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<User> users = userRepo.findAll(pageable);
+        return users.map(MAPPER::mapToUserResponse);
+    }
+
+    @Override
+    public Page<UserResponseDto> searchUsers(UserSearchCriteria criteria, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Specification<User> specification = UserSpecification.buildSpecification(criteria);
+        Page<User> users = userRepo.findAll(specification, pageable);
+        return users.map(MAPPER::mapToUserResponse);
     }
 
     @Override

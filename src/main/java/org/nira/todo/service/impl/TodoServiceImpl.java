@@ -4,13 +4,17 @@ import lombok.RequiredArgsConstructor;
 import org.nira.todo.dto.todo.TodoRequestDto;
 import org.nira.todo.dto.todo.TodoRequestUpdateDto;
 import org.nira.todo.dto.todo.TodoResponseDto;
+import org.nira.todo.dto.todo.TodoSearchCriteria;
 import org.nira.todo.entity.Todo;
 import org.nira.todo.exception.ResourceNotFoundException;
 import org.nira.todo.repository.TodoRepo;
+import org.nira.todo.repository.specification.TodoSpecification;
 import org.nira.todo.service.TodoService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 import static org.nira.todo.mapper.TodoMapper.MAPPER;
 
@@ -35,9 +39,18 @@ public class TodoServiceImpl implements TodoService {
     }
 
     @Override
-    public List<TodoResponseDto> getAllTodos() {
-        List<Todo> todos = todoRepo.findAll();
-        return todos.stream().map(MAPPER::mapToTodoResponseDto).toList();
+    public Page<TodoResponseDto> getAllTodos(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Todo> todos = todoRepo.findAll(pageable);
+        return todos.map(MAPPER::mapToTodoResponseDto);
+    }
+
+    @Override
+    public Page<TodoResponseDto> searchTodos(TodoSearchCriteria criteria, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Specification<Todo> specification = TodoSpecification.buildSpecification(criteria);
+        Page<Todo> todos = todoRepo.findAll(specification, pageable);
+        return todos.map(MAPPER::mapToTodoResponseDto);
     }
 
     @Override
@@ -51,7 +64,7 @@ public class TodoServiceImpl implements TodoService {
 
     @Override
     public void deleteTodoById(Long id) {
-        Todo todo = todoRepo.findById(id).
+        todoRepo.findById(id).
                 orElseThrow(() -> new ResourceNotFoundException("Todo Not Found with id: " + id));
         todoRepo.deleteById(id);
     }
