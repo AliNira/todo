@@ -22,8 +22,5 @@ public class TodoRequestUpdateDto {
             description = "Todo description"
     )
     private String description;
-    @Schema(
-            description = "Todo completion"
-    )
-    private Boolean done;
+
 }

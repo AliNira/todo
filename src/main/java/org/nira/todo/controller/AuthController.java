@@ -50,17 +50,20 @@ public class AuthController {
         return ResponseEntity.ok(Map.of("token", token));
     }
 
+    @Operation(
+            summary = "Logout"
+    )
+    @ApiResponse(
+            responseCode = "200"
+    )
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpServletRequest request) {
         String bearer = request.getHeader(HttpHeaders.AUTHORIZATION);
-
         if (StringUtils.hasText(bearer) && bearer.startsWith("Bearer ")) {
             String token = bearer.substring(7);
-
             long expirationMs = jwtTokenProvider.getExpirationFromToken(token);
             jwtBlacklistService.blacklistToken(token, expirationMs);
         }
-
         return ResponseEntity.ok("Logged out successfully");
     }
 

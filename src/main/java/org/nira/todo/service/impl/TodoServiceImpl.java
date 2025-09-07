@@ -99,7 +99,6 @@ public class TodoServiceImpl implements TodoService {
     private void applyNonNullFields(TodoRequestUpdateDto dto, Todo entity){
         if(dto.getTitle() != null) entity.setTitle(dto.getTitle());
         if(dto.getDescription() != null) entity.setDescription(dto.getDescription());
-        if(dto.getDone() != null) entity.setDone(dto.getDone());
     }
 
 }

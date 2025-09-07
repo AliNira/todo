@@ -1,7 +1,7 @@
 package org.nira.todo.dto.user;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,6 +19,6 @@ public class UserRequestUpdateRoleDto {
     @Schema(
             description = "User Role"
     )
-    @NotEmpty
+    @NotNull(message = "Role must not be null")
     private Role role;
 }
