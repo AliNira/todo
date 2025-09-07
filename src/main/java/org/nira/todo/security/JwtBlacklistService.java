@@ -13,7 +13,6 @@ public class JwtBlacklistService {
     private final StringRedisTemplate redisTemplate;
 
     public void blacklistToken(String token, long expirationMs) {
-        // Store token in Redis with TTL equal to remaining token lifetime
         redisTemplate.opsForValue().set(token, "blacklisted", expirationMs, TimeUnit.MILLISECONDS);
     }
 

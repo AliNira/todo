@@ -15,6 +15,7 @@ import org.nira.todo.service.TodoService;
 import org.nira.todo.service.minio.FileStorageService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -161,16 +162,12 @@ public class TodoController {
             responseCode = "200"
     )
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/{id}/upload-image")
+    @PostMapping(value = "/{id}/upload-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<TodoResponseDto> uploadImage(@PathVariable Long id,
                                                        @RequestParam("file") MultipartFile file) throws Exception {
         String fileName = fileStorageService.uploadFile(file);
         TodoResponseDto updated = todoService.attachImageToTodo(id, fileName);
         return ResponseEntity.ok(updated);
     }
-
-
-
-
 
 }
