@@ -155,12 +155,8 @@ public class TodoController {
         return new ResponseEntity<>(todoResponseDto, HttpStatus.OK);
     }
 
-    @Operation(
-            summary = "Add Image to Todo"
-    )
-    @ApiResponse(
-            responseCode = "200"
-    )
+    @Operation(summary = "Upload Todo Image")
+    @ApiResponse(responseCode = "200")
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/{id}/upload-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<TodoResponseDto> uploadImage(@PathVariable Long id,
@@ -169,5 +165,53 @@ public class TodoController {
         TodoResponseDto updated = todoService.attachImageToTodo(id, fileName);
         return ResponseEntity.ok(updated);
     }
+
+    @Operation(summary = "Update Todo Image")
+    @ApiResponse(responseCode = "200")
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping(value = "/{id}/update-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<TodoResponseDto> updateImage(@PathVariable Long id,
+                                                       @RequestParam("file") MultipartFile file) throws Exception {
+        TodoResponseDto existing = todoService.getTodoById(id);
+
+        if (existing.getImageUrl() != null) {
+            fileStorageService.deleteFile(existing.getImageUrl());
+        }
+
+        String fileName = fileStorageService.uploadFile(file);
+        TodoResponseDto updated = todoService.attachImageToTodo(id, fileName);
+        return ResponseEntity.ok(updated);
+    }
+
+    @Operation(summary = "Delete Todo Image")
+    @ApiResponse(responseCode = "204")
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/{id}/delete-image")
+    public ResponseEntity<Void> deleteImage(@PathVariable Long id) throws Exception {
+        TodoResponseDto existing = todoService.getTodoById(id);
+
+        if (existing.getImageUrl() != null) {
+            fileStorageService.deleteFile(existing.getImageUrl());
+        }
+
+        todoService.attachImageToTodo(id, null);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "Get Todo Image (Presigned URL)")
+    @ApiResponse(responseCode = "200")
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/{id}/image")
+    public ResponseEntity<String> getImageUrl(@PathVariable Long id) throws Exception {
+        TodoResponseDto existing = todoService.getTodoById(id);
+
+        if (existing.getImageUrl() == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        String url = fileStorageService.getPresignedUrl(existing.getImageUrl());
+        return ResponseEntity.ok(url);
+    }
+
 
 }
